@@ -1,4 +1,4 @@
-name: Uncached Build
+name: Uncached (nightly) Build
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
   checks: write
 
 jobs:
-  build:
+  uncached-build:
     runs-on: ubuntu-22.04
 
     steps:
