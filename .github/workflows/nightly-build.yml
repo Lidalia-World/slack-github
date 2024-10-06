@@ -1,0 +1,22 @@
+name: Build
+
+on:
+  schedule:
+    # Daily at 2AM
+    # * is a special character in YAML so you have to quote this string
+    - cron: '0 2 * * *'
+
+permissions:
+  checks: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - run: ./build.sh
+
+      - uses: Mahoney-github-actions/gradle-build-output@v1
