@@ -4,11 +4,8 @@ plugins {
 }
 
 dependencies {
-  implementation("org.apache.commons:commons-text")
-  implementation(projects.utilities)
 }
 
 application {
-  // Define the main class for the application.
-  mainClass = "org.example.app.AppKt"
+  mainClass = "uk.org.lidalia.slackgithub.app.AppKt"
 }
