@@ -27,7 +27,7 @@ jobs:
         with:
           version: "lab:latest"
           driver: cloud
-          endpoint: "mahoney266/slack-github-gha"
+          endpoint: "mahoney266/lidalia-world-gha"
           install: true
 
       - uses: docker/build-push-action@v6
