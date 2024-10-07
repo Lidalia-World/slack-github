@@ -1,4 +1,4 @@
-package uk.org.lidalia.slackgithub.app
+package slackgithub.app
 
 fun main() {
 }

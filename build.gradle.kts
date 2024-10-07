@@ -20,8 +20,6 @@ buildscript {
   }
 }
 
-group = "uk.org.lidalia.slackgithub"
-
 tasks {
   check {
     dependsOn("buildHealth")
@@ -48,7 +46,6 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 subprojects {
-  group = rootProject.group
   val relativeProjectPath: Path = rootProject.projectDir.toPath().relativize(projectDir.toPath())
   layout.buildDirectory = rootProject.layout.buildDirectory.get()
     .dir("child-projects")
