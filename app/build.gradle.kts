@@ -7,5 +7,6 @@ dependencies {
 }
 
 application {
-  mainClass = "uk.org.lidalia.slackgithub.app.AppKt"
+  mainModule = "slackgithub.app"
+  mainClass = "slackgithub.app.AppKt"
 }

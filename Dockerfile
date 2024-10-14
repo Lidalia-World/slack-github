@@ -1,12 +1,16 @@
 # syntax=docker/dockerfile:1.10.0
 ARG username=worker
+ARG gid=1000
+ARG uid=1001
 ARG work_dir=/home/$username/work
+ARG base_modules=java.base
+ARG jre_dir=/opt/jre
 
 # Copy across all the build definition files in a separate stage
 # This will not get any layer caching if anything in the context has changed, but when we
 # subsequently copy them into a different stage that stage *will* get layer caching. So if none of
 # the build definition files have changed, a subsequent command will also get layer caching.
-FROM --platform=$BUILDPLATFORM alpine AS gradle-files
+FROM --platform=$BUILDPLATFORM busybox:1.37.0-glibc AS gradle-files
 RUN --mount=type=bind,target=/docker-context \
     mkdir -p /gradle-files/gradle && \
     cd /docker-context/ && \
@@ -18,12 +22,14 @@ RUN --mount=type=bind,target=/docker-context \
     find . -name "*module-info.java" -exec cp --parents "{}" /gradle-files/ \;
 
 
-FROM --platform=$BUILDPLATFORM eclipse-temurin:21.0.4_7-jdk-jammy AS base_builder
+# Cannot use 23 alpine here, gradle fails with
+# org.gradle.internal.nativeintegration.NativeIntegrationUnavailableException: Service 'SystemInfo' is not available (os=Linux 6.10.4-linuxkit aarch64, enabled=false)
+FROM --platform=$BUILDPLATFORM eclipse-temurin:21.0.4_7-jdk-alpine AS base_builder
 
 ARG username
 ARG work_dir
-ARG gid=1000
-ARG uid=1001
+ARG gid
+ARG uid
 
 RUN addgroup --system $username --gid $gid && \
     adduser --system $username --ingroup $username --uid $uid
@@ -76,3 +82,35 @@ FROM --platform=$BUILDPLATFORM base_builder AS builder
 RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
     if [ -f build/failed ]; then ./gradlew --offline build; fi
+
+
+FROM eclipse-temurin:23_37-jdk-noble AS small_jre_builder
+
+ARG base_modules
+ARG jre_dir
+
+COPY --link prepareSmallJre.sh .
+RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
+
+
+FROM busybox:1.37.0-glibc
+
+ARG jre_dir
+ARG username
+ARG work_dir
+ARG gid
+ARG uid
+
+#RUN addgroup --system $username --gid $gid && \
+#    adduser --system $username --ingroup $username --uid $uid
+
+COPY --link --from=small_jre_builder $jre_dir $jre_dir
+ENV JAVA_HOME=$jre_dir
+ENV PATH="$jre_dir/bin:$PATH"
+
+#USER $username
+RUN mkdir -p $work_dir
+WORKDIR $work_dir
+
+
+ENTRYPOINT [ "java" ]
