@@ -83,6 +83,7 @@ RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
     if [ -f build/failed ]; then ./gradlew --offline build; fi
 
+RUN tar -xf build/child-projects/app/distributions/app.tar -C build/child-projects/app/distributions
 
 FROM eclipse-temurin:23_37-jdk-alpine AS small_jre_builder
 
@@ -112,5 +113,6 @@ USER $username
 RUN mkdir -p $work_dir
 WORKDIR $work_dir
 
+COPY --link --from=builder --chown=root:root $work_dir/build/child-projects/app/distributions/app/lib/ /opt/slack-github/
 
-ENTRYPOINT [ "java" ]
+ENTRYPOINT [ "java", "--module-path", "/opt/slack-github", "-m", "slackgithub.app" ]

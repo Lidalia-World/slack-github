@@ -52,7 +52,6 @@ jobs:
           tags: ghcr.io/${{ env.docker_image_name }}:${{ github.sha }}
           push: true
 
-      - run: |
-          docker run --rm ghcr.io/${{ env.docker_image_name }}:${{ github.sha }} --version
+      - run: docker run --rm ghcr.io/${{ env.docker_image_name }}:${{ github.sha }}
 
       - uses: Mahoney-github-actions/gradle-build-output@v1
