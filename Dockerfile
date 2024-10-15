@@ -84,7 +84,7 @@ RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     if [ -f build/failed ]; then ./gradlew --offline build; fi
 
 
-FROM eclipse-temurin:23_37-jdk-noble AS small_jre_builder
+FROM eclipse-temurin:23_37-jdk-alpine AS small_jre_builder
 
 ARG base_modules
 ARG jre_dir
@@ -93,7 +93,7 @@ COPY --link prepareSmallJre.sh .
 RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
 
 
-FROM busybox:1.37.0-glibc
+FROM alpine:3.20.3
 
 ARG jre_dir
 ARG username
@@ -101,14 +101,14 @@ ARG work_dir
 ARG gid
 ARG uid
 
-#RUN addgroup --system $username --gid $gid && \
-#    adduser --system $username --ingroup $username --uid $uid
+RUN addgroup --system $username --gid $gid && \
+    adduser --system $username --ingroup $username --uid $uid
 
 COPY --link --from=small_jre_builder $jre_dir $jre_dir
 ENV JAVA_HOME=$jre_dir
 ENV PATH="$jre_dir/bin:$PATH"
 
-#USER $username
+USER $username
 RUN mkdir -p $work_dir
 WORKDIR $work_dir
 
