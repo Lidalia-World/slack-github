@@ -15,7 +15,7 @@ main() {
   if [ -f build/failed ]; then
     exit "$(cat build/failed)";
   else
-    echo "Build successful"
+    docker build . "$@"
   fi
 }
 

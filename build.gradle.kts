@@ -45,9 +45,12 @@ tasks.withType<DependencyUpdatesTask> {
   }
 }
 
+val initialBuildDir = rootProject.layout.buildDirectory.get()
+rootProject.layout.buildDirectory = initialBuildDir.dir("root")
+
 subprojects {
   val relativeProjectPath: Path = rootProject.projectDir.toPath().relativize(projectDir.toPath())
-  layout.buildDirectory = rootProject.layout.buildDirectory.get()
+  layout.buildDirectory = initialBuildDir
     .dir("child-projects")
     .dir(relativeProjectPath.toString())
 }

@@ -17,3 +17,8 @@ dependencies {
   implementation(libs.kotlinter.gradle.plugin)
   implementation(libs.ideaext.gradle.plugin)
 }
+
+layout.buildDirectory = rootProject.layout.projectDirectory
+  .dir("..")
+  .dir("build")
+  .dir("build-logic")
