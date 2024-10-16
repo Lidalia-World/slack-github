@@ -97,7 +97,7 @@ COPY --link prepareSmallJre.sh .
 RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
 
 
-FROM alpine:3.20.3
+FROM busybox:1.37.0-musl
 
 ARG jre_dir
 ARG username
@@ -109,6 +109,7 @@ RUN addgroup --system $username --gid $gid && \
     adduser --system $username --ingroup $username --uid $uid
 
 COPY --link --from=small_jre_builder $jre_dir $jre_dir
+COPY --link --from=small_jre_builder /lib/ld-musl-* /lib/
 ENV JAVA_HOME=$jre_dir
 ENV PATH="$jre_dir/bin:$PATH"
 
