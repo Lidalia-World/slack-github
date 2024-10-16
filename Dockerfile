@@ -88,6 +88,7 @@ RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
 
 RUN tar -xf build/child-projects/app/distributions/app.tar -C build/child-projects/app/distributions
 
+
 FROM eclipse-temurin:23_37-jdk-alpine AS small_jre_builder
 
 ARG base_modules
@@ -109,7 +110,7 @@ RUN addgroup --system $username --gid $gid && \
     adduser --system $username --ingroup $username --uid $uid
 
 COPY --link --from=small_jre_builder $jre_dir $jre_dir
-COPY --link --from=small_jre_builder /lib/ld-musl-* /lib/
+COPY --link --from=alpine:3.20.3 /lib/ld-musl-* /lib/
 ENV JAVA_HOME=$jre_dir
 ENV PATH="$jre_dir/bin:$PATH"
 
