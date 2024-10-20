@@ -8,7 +8,6 @@ main() {
   jlink \
       --add-modules "$base_modules" \
       --strip-debug \
-      --compress 2 \
       --no-header-files \
       --no-man-pages \
       --output "$build_jvm_dir"
