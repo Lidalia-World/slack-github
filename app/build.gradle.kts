@@ -4,13 +4,8 @@ plugins {
 }
 
 dependencies {
-//  implementation(libs.aws.lambda.core)
-//  implementation(libs.aws.lambda.events)
-  implementation(platform(libs.http4k.bom))
+  implementation(projects.awsLambdaRuntime)
   implementation(libs.http4k.core)
-  implementation(libs.http4k.serverless.core)
-  implementation(libs.http4k.serverless.lambda)
-  implementation(libs.http4k.serverless.lambda.runtime)
 }
 
 application {

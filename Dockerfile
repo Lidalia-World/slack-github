@@ -3,7 +3,7 @@ ARG username=worker
 ARG gid=1000
 ARG uid=1001
 ARG work_dir=/home/$username/work
-ARG base_modules=java.base,java.logging,java.management,java.net.http
+ARG base_modules=java.base,java.logging,java.management,java.net.http,jdk.httpserver
 ARG jre_dir=/opt/jre
 
 # Copy across all the build definition files in a separate stage

@@ -15,6 +15,7 @@ http4k-core = { module = "org.http4k:http4k-core" }
 http4k-serverless-core = { module = "org.http4k:http4k-serverless-core" }
 http4k-serverless-lambda = { module = "org.http4k:http4k-serverless-lambda" }
 http4k-serverless-lambda-runtime = { module = "org.http4k:http4k-serverless-lambda-runtime" }
+http4k-format-moshi = { module = "org.http4k:http4k-format-moshi" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 

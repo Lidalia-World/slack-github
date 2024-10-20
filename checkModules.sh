@@ -25,7 +25,7 @@ find_java_deps() {
       -R \
       -s \
       $class_path/* \
-    | grep 'java\.' \
+    | egrep '(java|jdk)\.' \
     | cut -d' ' -f3 \
     | sort -u \
     | paste -sd "," -
