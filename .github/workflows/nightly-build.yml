@@ -24,6 +24,6 @@ jobs:
 
       - run: ./build.sh -t ${{ env.docker_image_name }}:${{ github.sha }}
 
-      - run: docker run --rm ${{ env.docker_image_name }}:${{ github.sha }}
+      - run: docker run --rm ${{ env.docker_image_name }}:${{ github.sha }} --test
 
       - uses: Mahoney-github-actions/gradle-build-output@v1

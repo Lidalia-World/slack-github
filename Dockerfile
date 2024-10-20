@@ -3,14 +3,14 @@ ARG username=worker
 ARG gid=1000
 ARG uid=1001
 ARG work_dir=/home/$username/work
-ARG base_modules=java.base
+ARG base_modules=java.base,java.logging,java.management,java.net.http,jdk.httpserver
 ARG jre_dir=/opt/jre
 
 # Copy across all the build definition files in a separate stage
 # This will not get any layer caching if anything in the context has changed, but when we
 # subsequently copy them into a different stage that stage *will* get layer caching. So if none of
 # the build definition files have changed, a subsequent command will also get layer caching.
-FROM --platform=$BUILDPLATFORM busybox:1.37.0-glibc AS gradle-files
+FROM --platform=$BUILDPLATFORM busybox:1.37.0-musl AS gradle-files
 RUN --mount=type=bind,target=/docker-context \
     mkdir -p /gradle-files/gradle && \
     cd /docker-context/ && \
@@ -22,9 +22,7 @@ RUN --mount=type=bind,target=/docker-context \
     find . -name "*module-info.java" -exec cp --parents "{}" /gradle-files/ \;
 
 
-# Cannot use 23 alpine here, gradle fails with
-# org.gradle.internal.nativeintegration.NativeIntegrationUnavailableException: Service 'SystemInfo' is not available (os=Linux 6.10.4-linuxkit aarch64, enabled=false)
-FROM --platform=$BUILDPLATFORM eclipse-temurin:21.0.4_7-jdk-alpine AS base_builder
+FROM --platform=$BUILDPLATFORM eclipse-temurin:23_37-jdk-alpine AS base_builder
 
 ARG username
 ARG work_dir
@@ -86,7 +84,8 @@ RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
     if [ -f build/failed ]; then ./gradlew --offline build; fi
 
-RUN tar -xf build/child-projects/app/distributions/app.tar -C build/child-projects/app/distributions
+ARG base_modules
+RUN ./checkModules.sh "$work_dir/build/project/artifacts/lib" "$base_modules"
 
 
 FROM eclipse-temurin:23_37-jdk-alpine AS small_jre_builder
@@ -118,6 +117,6 @@ USER $username
 RUN mkdir -p $work_dir
 WORKDIR $work_dir
 
-COPY --link --from=builder --chown=root:root $work_dir/build/child-projects/app/distributions/app/lib/ /opt/slack-github/
+COPY --link --from=builder --chown=root:root $work_dir/build/project/artifacts/lib/ /opt/slack-github/
 
-ENTRYPOINT [ "java", "--module-path", "/opt/slack-github", "-m", "slackgithub.app" ]
+ENTRYPOINT [ "java", "-XX:+UseZGC", "-jar", "/opt/slack-github/app.jar" ]

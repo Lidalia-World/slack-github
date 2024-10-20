@@ -1,12 +1,12 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.gundy.semver4j.model.Version
+import org.gradle.api.distribution.plugins.DistributionPlugin.TASK_INSTALL_NAME
 import java.nio.file.Path
 
 plugins {
   base
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlinter)
-  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.taskTree)
   alias(libs.plugins.versions)
 }
@@ -21,6 +21,17 @@ buildscript {
 }
 
 tasks {
+  register<Copy>("copyDistribution") {
+    val app = project(":app")
+    dependsOn(app.tasks.getByName("installDist"))
+    from(app.tasks.getByName(TASK_INSTALL_NAME))
+    into(project.layout.buildDirectory.dir("artifacts"))
+  }
+
+  assemble {
+    dependsOn("copyDistribution")
+  }
+
   check {
     dependsOn("buildHealth")
     dependsOn("installKotlinterPrePushHook")
@@ -35,6 +46,9 @@ dependencyAnalysis {
       onAny {
         severity("fail")
       }
+      onUnusedDependencies {
+        exclude(libs.junit.jupiter.asProvider())
+      }
     }
   }
 }
@@ -46,11 +60,11 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 val initialBuildDir = rootProject.layout.buildDirectory.get()
-rootProject.layout.buildDirectory = initialBuildDir.dir("root")
+rootProject.layout.buildDirectory = initialBuildDir.dir("project")
 
 subprojects {
   val relativeProjectPath: Path = rootProject.projectDir.toPath().relativize(projectDir.toPath())
-  layout.buildDirectory = initialBuildDir
+  layout.buildDirectory = rootProject.layout.buildDirectory.get()
     .dir("child-projects")
     .dir(relativeProjectPath.toString())
 }
