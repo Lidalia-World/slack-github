@@ -10,10 +10,6 @@ plugins {
   id("uk.org.lidalia.ideaext")
 }
 
-private val illegalModuleCharacter: Regex = "[^a-z0-9.]".toRegex()
-
-fun String.normalise(): String = replace(illegalModuleCharacter, "")
-
 repositories {
   mavenCentral()
 }
