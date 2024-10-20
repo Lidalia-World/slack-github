@@ -10,7 +10,7 @@ ARG jre_dir=/opt/jre
 # This will not get any layer caching if anything in the context has changed, but when we
 # subsequently copy them into a different stage that stage *will* get layer caching. So if none of
 # the build definition files have changed, a subsequent command will also get layer caching.
-FROM --platform=$BUILDPLATFORM busybox:1.37.0-glibc AS gradle-files
+FROM --platform=$BUILDPLATFORM busybox:1.37.0-musl AS gradle-files
 RUN --mount=type=bind,target=/docker-context \
     mkdir -p /gradle-files/gradle && \
     cd /docker-context/ && \
@@ -22,9 +22,7 @@ RUN --mount=type=bind,target=/docker-context \
     find . -name "*module-info.java" -exec cp --parents "{}" /gradle-files/ \;
 
 
-# Cannot use 23 alpine here, gradle fails with
-# org.gradle.internal.nativeintegration.NativeIntegrationUnavailableException: Service 'SystemInfo' is not available (os=Linux 6.10.4-linuxkit aarch64, enabled=false)
-FROM --platform=$BUILDPLATFORM eclipse-temurin:21.0.4_7-jdk-alpine AS base_builder
+FROM --platform=$BUILDPLATFORM eclipse-temurin:23_37-jdk-alpine AS base_builder
 
 ARG username
 ARG work_dir

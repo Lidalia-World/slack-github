@@ -1,5 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.gradle.api.JavaVersion.VERSION_21
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("org.jetbrains.kotlin.jvm")
   id("org.jmailen.kotlinter")
@@ -23,16 +27,10 @@ testing {
 }
 
 java {
-  toolchain {
-    languageVersion = JavaLanguageVersion.of(21)
-  }
+  sourceCompatibility = VERSION_21
+  targetCompatibility = VERSION_21
 }
 
-val moduleName = "${project.group}.${project.name}".normalise()
-
-// this is needed because 'module-info.java' is in 'main/java' and the Kotlin code is in 'main/kotlin'
-tasks.compileJava {
-  // Compiling module-info in the 'main/java' folder needs to see already compiled Kotlin code
-  options.compilerArgs = listOf("--patch-module", "$moduleName=${sourceSets.main.get().output.asPath}")
+tasks.withType<KotlinCompile> {
+  compilerOptions.jvmTarget = JVM_21
 }
-
