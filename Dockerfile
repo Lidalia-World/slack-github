@@ -3,7 +3,7 @@ ARG username=worker
 ARG gid=1000
 ARG uid=1001
 ARG work_dir=/home/$username/work
-ARG base_modules=java.base,java.net.http
+ARG base_modules=java.base,java.logging,java.management,java.net.http
 ARG jre_dir=/opt/jre
 
 # Copy across all the build definition files in a separate stage
@@ -83,6 +83,9 @@ FROM --platform=$BUILDPLATFORM base_builder AS builder
 RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
     if [ -f build/failed ]; then ./gradlew --offline build; fi
+
+ARG base_modules
+RUN ./checkModules.sh "$work_dir/build/project/artifacts/lib" "$base_modules"
 
 
 FROM eclipse-temurin:23_37-jdk-alpine AS small_jre_builder
