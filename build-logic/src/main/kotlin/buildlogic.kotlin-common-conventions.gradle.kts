@@ -14,6 +14,10 @@ repositories {
   mavenCentral()
 }
 
+dependencies {
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
+}
+
 testing {
   suites {
     val test by getting(JvmTestSuite::class) {

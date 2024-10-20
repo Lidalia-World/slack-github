@@ -7,7 +7,6 @@ plugins {
   base
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlinter)
-  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.taskTree)
   alias(libs.plugins.versions)
 }
@@ -46,6 +45,9 @@ dependencyAnalysis {
       // set behavior for all issue types
       onAny {
         severity("fail")
+      }
+      onUnusedDependencies {
+        exclude(libs.junit.jupiter.asProvider())
       }
     }
   }

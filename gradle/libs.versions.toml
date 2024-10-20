@@ -2,6 +2,7 @@
 kotlin = "2.0.21"
 kotlinter = "4.4.1"
 ideaext = "0.3.0"
+junit = "5.10.3"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -14,6 +15,8 @@ http4k-core = { module = "org.http4k:http4k-core" }
 http4k-serverless-core = { module = "org.http4k:http4k-serverless-core" }
 http4k-serverless-lambda = { module = "org.http4k:http4k-serverless-lambda" }
 http4k-serverless-lambda-runtime = { module = "org.http4k:http4k-serverless-lambda-runtime" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
