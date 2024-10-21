@@ -7,11 +7,3 @@ dependencies {
   api(libs.http4k.core)
   implementation(libs.http4k.format.moshi)
 }
-
-dependencyAnalysis {
-  issues {
-    onUnusedDependencies {
-      exclude(libs.junit.jupiter.api)
-    }
-  }
-}
