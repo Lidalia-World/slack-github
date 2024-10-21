@@ -14,7 +14,20 @@ jobs:
   uncached-build:
     runs-on: ubuntu-22.04
 
+    env:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+
     steps:
+
+      - uses: crazy-max/ghaction-setup-docker@v2
+        with:
+          version: v24.0.6
+          daemon-config: |
+            {
+              "features": {
+                "containerd-snapshotter": true
+              }
+            }
 
       - name: Build docker image name
         run: |
@@ -22,7 +35,14 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - run: ./build.sh -t ${{ env.docker_image_name }}:${{ github.sha }}
+      # Allow us to build multi-arch images
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+        with:
+          install: 'true'
+
+      - run: ./build.sh --platform linux/arm64/v8,linux/amd64 --load -t ${{ env.docker_image_name }}:${{ github.sha }}
 
       - run: docker run --rm ${{ env.docker_image_name }}:${{ github.sha }} --test
 
