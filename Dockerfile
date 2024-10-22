@@ -115,8 +115,8 @@ ARG jre_dir
 ENV JAVA_HOME=$jre_dir
 ENV PATH="$jre_dir/bin:$PATH"
 
-COPY --link --from=small_jre_builder $jre_dir $jre_dir
-COPY --link --from=alpine:3.20.3 /lib/ld-musl-* /lib/
+COPY --link --from=small_jre_builder --chown=root:root $jre_dir $jre_dir
+COPY --link --from=alpine:3.20.3 --chown=root:root /lib/ld-musl-* /lib/
 COPY --link --from=builder --chown=root:root $work_dir/build/project/artifacts/lib/ /opt/slack-github/
 
 ENTRYPOINT [ "java", "-XX:+UseZGC", "-jar", "/opt/slack-github/app.jar" ]
