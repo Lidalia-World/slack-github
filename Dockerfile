@@ -99,7 +99,6 @@ RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
 
 FROM busybox:1.37.0-musl
 
-ARG jre_dir
 ARG username
 ARG work_dir
 ARG gid
@@ -108,15 +107,16 @@ ARG uid
 RUN addgroup --system $username --gid $gid && \
     adduser --system $username --ingroup $username --uid $uid
 
-COPY --link --from=small_jre_builder $jre_dir $jre_dir
-COPY --link --from=alpine:3.20.3 /lib/ld-musl-* /lib/
-ENV JAVA_HOME=$jre_dir
-ENV PATH="$jre_dir/bin:$PATH"
-
 USER $username
 RUN mkdir -p $work_dir
 WORKDIR $work_dir
 
+ARG jre_dir
+ENV JAVA_HOME=$jre_dir
+ENV PATH="$jre_dir/bin:$PATH"
+
+COPY --link --from=small_jre_builder $jre_dir $jre_dir
+COPY --link --from=alpine:3.20.3 /lib/ld-musl-* /lib/
 COPY --link --from=builder --chown=root:root $work_dir/build/project/artifacts/lib/ /opt/slack-github/
 
 ENTRYPOINT [ "java", "-XX:+UseZGC", "-jar", "/opt/slack-github/app.jar" ]
