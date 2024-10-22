@@ -13,14 +13,16 @@ fun main(args: Array<String>) {
 }
 
 private fun runServer() {
-  val server = AWSLambdaRuntimeAPIServer().asServer(SunHttpLoom(8000))
+  val server = http4kServer()
     .start()
   println("Server running at http://localhost:${server.port()}")
 }
 
 private fun testServer() {
-  AWSLambdaRuntimeAPIServer().asServer(SunHttpLoom(8000))
+  http4kServer()
     .start()
     .stop()
   println("Test successful - server was able to start up and shutdown")
 }
+
+private fun http4kServer() = AWSLambdaRuntimeAPIServer().asServer(SunHttpLoom(8000))
