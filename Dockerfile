@@ -36,6 +36,12 @@ USER $username
 RUN mkdir -p $work_dir
 WORKDIR $work_dir
 
+# Download gradle in a separate step to benefit from layer caching
+COPY --link --chown=$uid gradle/wrapper gradle/wrapper
+COPY --link --chown=$uid gradlew gradlew
+RUN  ./gradlew --version
+
+
 ARG gradle_cache_dir=/home/$username/.gradle/caches
 
 RUN mkdir -p $gradle_cache_dir
@@ -46,11 +52,6 @@ ENV GRADLE_OPTS="\
 -Dorg.gradle.vfs.watch=false \
 -Dorg.gradle.console=plain \
 "
-
-# Download gradle in a separate step to benefit from layer caching
-COPY --link --chown=$uid gradle/wrapper gradle/wrapper
-COPY --link --chown=$uid gradlew gradlew
-RUN  ./gradlew --version
 
 # Build the configuration cache & download all deps in a single layer
 COPY --link --chown=$uid --from=gradle-files /gradle-files ./
