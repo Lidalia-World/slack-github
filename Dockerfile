@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.10.0
-ARG username=worker
+ARG username=slackgithub
 ARG gid=1000
 ARG uid=1001
 ARG work_dir=/home/$username/work
@@ -40,7 +40,6 @@ WORKDIR $work_dir
 COPY --link --chown=$uid gradle/wrapper gradle/wrapper
 COPY --link --chown=$uid gradlew gradlew
 RUN  ./gradlew --version
-
 
 ARG gradle_cache_dir=/home/$username/.gradle/caches
 
