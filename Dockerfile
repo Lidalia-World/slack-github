@@ -14,6 +14,8 @@ FROM --platform=$BUILDPLATFORM busybox:1.37.0-musl AS gradle-files
 RUN --mount=type=bind,target=/docker-context \
     mkdir -p /gradle-files/gradle && \
     cd /docker-context/ && \
+    cp -R gradle /gradle-files/ && \
+    cp gradlew /gradle-files/ && \
     find . -name "*.gradle" -exec cp --parents "{}" /gradle-files/ \; && \
     find . -name "*.gradle.kts" -exec cp --parents "{}" /gradle-files/ \; && \
     find . -name "libs.versions.toml" -exec cp --parents "{}" /gradle-files/ \; && \
@@ -25,7 +27,6 @@ RUN --mount=type=bind,target=/docker-context \
 FROM --platform=$BUILDPLATFORM eclipse-temurin:23_37-jdk-alpine AS base_builder
 
 ARG username
-ARG work_dir
 ARG gid
 ARG uid
 
@@ -33,13 +34,15 @@ RUN addgroup --system $username --gid $gid && \
     adduser --system $username --ingroup $username --uid $uid
 
 USER $username
-RUN mkdir -p $work_dir
-WORKDIR $work_dir
 
 # Download gradle in a separate step to benefit from layer caching
-COPY --link --chown=$uid gradle/wrapper gradle/wrapper
-COPY --link --chown=$uid gradlew gradlew
+COPY --chown=$uid gradle/wrapper gradle/wrapper
+COPY --chown=$uid gradlew gradlew
 RUN  ./gradlew --version
+
+ARG work_dir
+RUN mkdir -p $work_dir
+WORKDIR $work_dir
 
 ARG gradle_cache_dir=/home/$username/.gradle/caches
 
@@ -53,12 +56,12 @@ ENV GRADLE_OPTS="\
 "
 
 # Build the configuration cache & download all deps in a single layer
-COPY --link --chown=$uid --from=gradle-files /gradle-files ./
+COPY --chown=$uid --from=gradle-files /gradle-files ./
 RUN  --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
      --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
      ./gradlew build --dry-run
 
-COPY --link --chown=$uid . .
+COPY --chown=$uid . .
 
 # So the tests can run without network access. Proves no tests rely on external services.
 RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
@@ -95,7 +98,7 @@ COPY --link prepareSmallJre.sh .
 RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
 
 
-FROM busybox:1.37.0-musl
+FROM busybox:1.37.0-musl AS slackgithub
 
 ARG username
 ARG work_dir
