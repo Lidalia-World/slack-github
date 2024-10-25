@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.10.0
-ARG username=slackgithub
+ARG username=worker
 ARG gid=1000
 ARG uid=1001
-ARG work_dir=/home/$username/work
+ARG work_dir=/home/$username/slackgithub
 ARG base_modules=java.base,java.logging,java.management,java.net.http,jdk.httpserver
 ARG jre_dir=/opt/jre
 
