@@ -38,6 +38,8 @@ jobs:
 
       - run: docker buildx create --leave --node linux-arm64 --name ${{ steps.cloud-builder.outputs.name }}
 
+      - run: docker run --privileged --rm tonistiigi/binfmt --install all
+
       - uses: docker/build-push-action@v6
         with:
           context: .
