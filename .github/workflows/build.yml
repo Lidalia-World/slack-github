@@ -29,6 +29,7 @@ jobs:
           password: ${{ secrets.DOCKER_PAT }}
 
       - uses: docker/setup-buildx-action@v3
+        id: cloud-builder
         with:
           version: "lab:latest"
           driver: cloud
