@@ -33,6 +33,7 @@ jobs:
           version: "lab:latest"
           driver: cloud
           endpoint: "mahoney266/lidalia-world-gha"
+          platforms: linux/amd64
 
       - uses: docker/build-push-action@v6
         with:
@@ -44,6 +45,7 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/arm64/v8,linux/amd64
           provenance: false
           tags: ${{ env.docker_image_name }}:${{ github.sha }}
 
