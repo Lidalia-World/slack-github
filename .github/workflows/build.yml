@@ -33,7 +33,9 @@ jobs:
           version: "lab:latest"
           driver: cloud
           endpoint: "mahoney266/lidalia-world-gha"
-          platforms: linux/amd64
+          install: 'true'
+
+      - run: docker buildx create --leave --node linux-arm64 --name ${{ steps.cloud-builder.outputs.name }}
 
       - uses: docker/build-push-action@v6
         with:
@@ -46,7 +48,6 @@ jobs:
         with:
           context: .
           platforms: linux/arm64/v8,linux/amd64
-          provenance: false
           tags: ${{ env.docker_image_name }}:${{ github.sha }}
 
       - run: docker run --rm ${{ env.docker_image_name }}:${{ github.sha }} --test
