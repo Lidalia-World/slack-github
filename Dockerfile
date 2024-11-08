@@ -21,7 +21,8 @@ RUN --mount=type=bind,target=/docker-context \
     find . -name "libs.versions.toml" -exec cp --parents "{}" /gradle-files/ \; && \
     find . -name ".editorconfig" -exec cp --parents "{}" /gradle-files/ \; && \
     find . -name "gradle.properties" -exec cp --parents "{}" /gradle-files/ \; && \
-    find . -name "*module-info.java" -exec cp --parents "{}" /gradle-files/ \;
+    find . -name "*module-info.java" -exec cp --parents "{}" /gradle-files/ \; && \
+    find . -name "gradle.lockfile" -exec cp --parents "{}" /gradle-files/ \;
 
 
 FROM --platform=$BUILDPLATFORM eclipse-temurin:23.0.1_11-jdk-alpine AS base_builder
