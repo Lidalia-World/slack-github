@@ -52,6 +52,7 @@ RUN mkdir -p $gradle_cache_dir
 ENV GRADLE_OPTS="\
 -Dorg.gradle.daemon=false \
 -Dorg.gradle.logging.stacktrace=all \
+-Dorg.gradle.logging.level=info \
 -Dorg.gradle.vfs.watch=false \
 -Dorg.gradle.console=plain \
 "
