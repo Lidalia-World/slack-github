@@ -57,11 +57,16 @@ ENV GRADLE_OPTS="\
 -Dorg.gradle.console=plain \
 "
 
+ENV GRADLE_PROPS="\
+-Pkotlin.compiler.execution.strategy=in-process \
+-Pkotlin.compiler.runViaBuildToolsApi=true \
+"
+
 # Build the configuration cache & download all deps in a single layer
 COPY --chown=$uid --from=gradle-files /gradle-files ./
 RUN  --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
      --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
-     ./gradlew build --dry-run
+     ./gradlew $GRADLE_PROPS build --dry-run
 
 COPY --chown=$uid . .
 
@@ -69,7 +74,7 @@ COPY --chown=$uid . .
 RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
     --network=none \
-    ./gradlew --offline build || (status=$?; mkdir -p build && echo $status > build/failed)
+    ./gradlew $GRADLE_PROPS --offline build || (status=$?; mkdir -p build && echo $status > build/failed)
 
 
 FROM --platform=$BUILDPLATFORM scratch AS build-output
@@ -85,7 +90,7 @@ COPY --link --from=base_builder $work_dir/build .
 FROM --platform=$BUILDPLATFORM base_builder AS builder
 RUN --mount=type=cache,gid=$gid,uid=$uid,target=$work_dir/.gradle \
     --mount=type=cache,gid=$gid,uid=$uid,target=$gradle_cache_dir \
-    if [ -f build/failed ]; then ./gradlew --offline build; fi
+    if [ -f build/failed ]; then ./gradlew $GRADLE_PROPS --offline build; fi
 
 ARG base_modules
 RUN ./checkModules.sh "$work_dir/build/project/artifacts/lib" "$base_modules"
