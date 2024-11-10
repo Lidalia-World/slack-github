@@ -1,22 +1,18 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-set -euo pipefail
+set -eu
 
-main() {
-  export BUILDKIT_PROGRESS=plain
-  export PROGRESS_NO_TRUNC=1
+export BUILDKIT_PROGRESS=plain
+export PROGRESS_NO_TRUNC=1
 
-  rm -rf build/failed
+rm -rf build/failed
 
-  docker build . \
-    --target build-output \
-    --output build
+docker build . \
+  --target build-output \
+  --output build
 
-  if [ -f build/failed ]; then
-    exit "$(cat build/failed)";
-  else
-    docker build . "$@"
-  fi
-}
-
-main "$@"
+if [ -f build/failed ]; then
+  exit "$(cat build/failed)";
+else
+  docker build . "$@"
+fi
