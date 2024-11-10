@@ -1,8 +1,16 @@
 package slackgithub.app
 
-import org.http4k.server.SunHttpLoom
-import org.http4k.server.asServer
-import slackgithub.awslambdaruntime.server.AWSLambdaRuntimeAPIServer
+import org.http4k.core.Method.GET
+import org.http4k.core.Response
+import org.http4k.core.Status.Companion.OK
+import org.http4k.core.then
+import org.http4k.filter.ServerFilters
+import org.http4k.routing.bind
+import org.http4k.routing.path
+import org.http4k.routing.routes
+import org.http4k.serverless.ApiGatewayV2FnLoader
+import org.http4k.serverless.AwsLambdaRuntime
+import org.http4k.serverless.asServer
 
 fun main(args: Array<String>) {
   if (args.contains("--test")) {
@@ -13,9 +21,8 @@ fun main(args: Array<String>) {
 }
 
 private fun runServer() {
-  val server = http4kServer()
-    .start()
-  println("Server running at http://localhost:${server.port()}")
+  http4kServer().start()
+  println("Lambda runtime running")
 }
 
 private fun testServer() {
@@ -25,4 +32,15 @@ private fun testServer() {
   println("Test successful - server was able to start up and shutdown")
 }
 
-private fun http4kServer() = AWSLambdaRuntimeAPIServer().asServer(SunHttpLoom(8000))
+private fun http4kServer() = ApiGatewayV2FnLoader(http4kApp).asServer(AwsLambdaRuntime()).start()
+
+val http4kApp = ServerFilters.CatchAll().then(
+  routes(
+    "/echo/{message:.*}" bind GET to {
+      Response(OK).body(
+        it.path("message") ?: "(nothing to echo, use /echo/<message>)",
+      )
+    },
+    "/" bind GET to { Response(OK).body("ok") },
+  ),
+)
