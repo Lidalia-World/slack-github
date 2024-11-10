@@ -47,7 +47,12 @@ jobs:
           provenance: false
           tags: ${{ env.docker_image_name }}:${{ github.sha }}
 
-      - run: docker run --rm ${{ env.docker_image_name }}:${{ github.sha }} --test
+      - run: >-
+          docker run
+          --rm
+          -e AWS_LAMBDA_RUNTIME_API=example.com
+          ${{ env.docker_image_name }}:${{ github.sha }}
+          --test
 
       - uses: Mahoney-github-actions/gradle-build-output@v1
         with:
