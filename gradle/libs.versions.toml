@@ -2,7 +2,7 @@
 kotlin = "2.0.21"
 kotlinter = "4.4.1"
 ideaext = "0.3.0"
-junit = "5.11.3"
+junit = "5.11.4"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
