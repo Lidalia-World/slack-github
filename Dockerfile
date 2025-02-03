@@ -25,7 +25,7 @@ RUN --mount=type=bind,target=/docker-context \
     find . -name "gradle.lockfile" -exec cp --parents "{}" /gradle-files/ \;
 
 
-FROM --platform=$BUILDPLATFORM eclipse-temurin:23.0.1_11-jdk-alpine AS base_builder
+FROM --platform=$BUILDPLATFORM eclipse-temurin:23.0.2_7-jdk-alpine AS base_builder
 
 ARG username
 ARG gid
@@ -96,7 +96,7 @@ ARG base_modules
 RUN ./checkModules.sh "$work_dir/build/project/artifacts/lib" "$base_modules"
 
 
-FROM eclipse-temurin:23.0.1_11-jdk-alpine AS small_jre_builder
+FROM eclipse-temurin:23.0.2_7-jdk-alpine AS small_jre_builder
 
 ARG base_modules
 ARG jre_dir
