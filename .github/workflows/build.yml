@@ -54,6 +54,6 @@ jobs:
           ${{ env.docker_image_name }}:${{ github.sha }}
           --test
 
-      - uses: Mahoney-github-actions/gradle-build-output@v1
+      - uses: Mahoney-github-actions/gradle-build-output@v2
         with:
           artifacts_dir: build/project/artifacts
