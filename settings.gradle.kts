@@ -12,7 +12,7 @@ pluginManagement {
 
 plugins {
   id("com.autonomousapps.build-health") version "2.16.0"
-  id("org.jetbrains.kotlin.jvm") version "2.0.21" apply false
+  id("org.jetbrains.kotlin.jvm") version "2.1.20" apply false
 }
 
 rootProject.name = "slack-github"
