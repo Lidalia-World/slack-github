@@ -34,14 +34,14 @@ jobs:
           driver: cloud
           endpoint: "mahoney266/lidalia-world-gha"
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           target: build-output
           provenance: false
           outputs: 'type=local,dest=build'
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           provenance: false
