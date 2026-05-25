@@ -10,7 +10,7 @@ ARG jre_dir=/opt/jre
 # This will not get any layer caching if anything in the context has changed, but when we
 # subsequently copy them into a different stage that stage *will* get layer caching. So if none of
 # the build definition files have changed, a subsequent command will also get layer caching.
-FROM --platform=$BUILDPLATFORM busybox:1.37.0-musl AS gradle-files
+FROM --platform=$BUILDPLATFORM busybox:1.38.0-musl AS gradle-files
 RUN --mount=type=bind,target=/docker-context \
     mkdir -p /gradle-files/gradle && \
     cd /docker-context/ && \
@@ -105,7 +105,7 @@ COPY --link prepareSmallJre.sh .
 RUN ./prepareSmallJre.sh "$base_modules" $jre_dir
 
 
-FROM busybox:1.37.0-musl AS slackgithub
+FROM busybox:1.38.0-musl AS slackgithub
 
 ARG username
 ARG work_dir
